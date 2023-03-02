@@ -26,6 +26,12 @@ const router = createRouter({
       component: Login,
       meta: {redirectIfAuth: true}
     },
+    {
+      path: '/admin/usuario',
+      name: 'Usuario',
+      component: () => import('../views/admin/Usuario.vue'),
+      meta: {requireAuth: true}
+    }
   ]
 })
 

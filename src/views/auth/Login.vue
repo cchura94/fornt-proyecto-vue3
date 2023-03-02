@@ -22,7 +22,7 @@ export default {
     setup(){
         const router = useRouter()
 
-        const usuario = ref({email: "prueba", password: ""})
+        const usuario = ref({email: "", password: ""})
         // usuario.value
 
         const funIngresar = async () => {

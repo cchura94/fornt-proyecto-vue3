@@ -1,0 +1,19 @@
+import { http } from "./HttpAxios"
+
+export default {
+    listar(){
+        return http().get("/admin/usuario");
+    },
+    guardar(datos){
+        return http().post("/admin/usuario", datos);
+    },
+    mostrar(id){
+        return http().get(`/admin/usuario/${id}`);
+    },
+    modificar(id, datos){
+        return http().put(`/admin/usuario/${id}`, datos);
+    },
+    eliminar(id){
+        return http().delete(`/admin/usuario/${id}`);
+    }
+}
