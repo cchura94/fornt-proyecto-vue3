@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>{{ titulo }}</h1>
-
+        
         <label for="">Nombre</label>
         <input type="text" v-model="usuario.name" required>
         {{ errors?.name }}
@@ -14,7 +14,12 @@
         <input type="password" v-model="usuario.password" required>
         {{ errors?.password }}
         <br>
-        <button @click="guardarUsuario()">Guardar Usuario</button>
+        <button @click="guardarUsuario()">{{ usuario.id?'Modificar Usuario':'Guardar Usuario' }}</button>
+        <button type="button" @click="resetForm()">Reset</button>
+
+<!-- Lista de usuarios -->
+
+<input type="search" v-model="buscar" @keypress.enter="listarUsuarios()">
 
         <table border="1">
             <tr>
@@ -30,8 +35,8 @@
                 <td>{{ u.email }}</td>
                 <td>{{ u.created_at }}</td>
                 <td>
-                    <button>editar</button>
-                    <button>x</button>
+                    <button @click="editarUsuario(u)">editar</button>
+                    <button @click="eliminar(u.id)">x</button>
                 </td>
             </tr>
 
@@ -51,21 +56,35 @@ export default {
         const usuarios = ref([])
         const usuario = ref({name: "", email: "", password: ""});
         const errors = ref(null)
+        const buscar = ref('')
 
         // metodos
         const listarUsuarios = async () => {
-            const {data} = await usuarioService.listar();
+            const {data} = await usuarioService.listar(buscar.value);
             usuarios.value = data
         }
 
         listarUsuarios()
 
+        const buscador= () => {
+            listarUsuarios()
+        }
+
         const guardarUsuario = async () => {
             try{
-                const {data} = await usuarioService.guardar(usuario.value);
-                console.log(data);
-                // listarUsuarios()
-                usuarios.value.push(data.data)
+                if(usuario.value.id){
+                    // modificar
+                    const {data} = await usuarioService.modificar(usuario.value.id, usuario.value);
+                    listarUsuarios();
+                    resetForm()
+                }else{
+                    const {data} = await usuarioService.guardar(usuario.value);
+                    console.log(data);
+                    // listarUsuarios()
+                    usuarios.value.push(data.data)
+
+                    resetForm()
+                }
             }catch(error){
                 console.log(error.response.data)
                 errors.value = error.response.data.errors
@@ -73,9 +92,27 @@ export default {
 
             // usuarioService.guardar(usuario.value).then(data).catch(e => console.log(e))
         }
-        
 
-        return { titulo, usuarios, usuario, guardarUsuario, errors}
+        const editarUsuario = (u) => {
+            const {name, email, id} = u
+            usuario.value = {name, email, id}
+        }
+
+        const resetForm = () => {
+            usuario.value.id = null;
+            usuario.value = {name: "", email: "", password: ""};
+        }
+
+        const eliminar = async (id) => {
+            if(confirm("¿Esta seguro de eliminar al usuario?")){
+                
+                const {data} = await usuarioService.eliminar(id);
+            listarUsuarios();
+            }            
+        }
+
+
+        return { titulo, usuarios, usuario, guardarUsuario, errors, editarUsuario, resetForm, eliminar, buscar, listarUsuarios}
     }    
     
 }
