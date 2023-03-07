@@ -21,27 +21,29 @@
 
 <input type="search" v-model="buscar" @keypress.enter="listarUsuarios()">
 
-        <table border="1">
-            <tr>
-                <td>ID</td>
-                <td>NOMBRE</td>
-                <td>CORREO</td>
-                <td>CREADO EN</td>
-                <td>ACCION</td>
-            </tr>
-            <tr v-for="u in usuarios" :key="u.id">
-                <td>{{ u.id }}</td>
-                <td>{{ u.name }}</td>
-                <td>{{ u.email }}</td>
-                <td>{{ u.created_at }}</td>
-                <td>
-                    <button @click="editarUsuario(u)">editar</button>
-                    <button @click="eliminar(u.id)">x</button>
-                </td>
-            </tr>
+<Button label="Nuevo" icon="pi pi-external-link" @click="openModalNuevoUsuario" />
 
-        </table>
-        
+        <Dialog header="Nuevo Usuario" v-model:visible="displayModal" :breakpoints="{'720px': '75vw', '540px': '90vw'}" :style="{width: '50vw'}" :modal="true" class="p-fluid">
+            
+            <InputText id="nom" type="text" v-model="usuario.name" />
+
+            <InputText id="em" type="email" v-model="usuario.email" />
+
+            <InputText id="pas" type="password" v-model="usuario.password" />
+
+            <template #footer>
+                <Button label="No" icon="pi pi-times" @click="closeModal" class="p-button-text"/>
+                <Button label="Yes" icon="pi pi-check" @click="guardarUsuario" autofocus />
+            </template>
+        </Dialog>
+
+<DataTable :value="usuarios" responsiveLayout="scroll">
+            <Column field="id" header="ID"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="email" header="Email"></Column>
+            <Column field="created_at" header="Creado en"></Column>
+        </DataTable>
+
     </div>
 </template>
 
@@ -57,6 +59,8 @@ export default {
         const usuario = ref({name: "", email: "", password: ""});
         const errors = ref(null)
         const buscar = ref('')
+
+        const displayModal = ref(false);
 
         // metodos
         const listarUsuarios = async () => {
@@ -111,8 +115,12 @@ export default {
             }            
         }
 
+        const openModalNuevoUsuario = () => {
+            displayModal.value = true;
+        }
 
-        return { titulo, usuarios, usuario, guardarUsuario, errors, editarUsuario, resetForm, eliminar, buscar, listarUsuarios}
+
+        return { titulo, usuarios, usuario, guardarUsuario, errors, editarUsuario, resetForm, eliminar, buscar, listarUsuarios, openModalNuevoUsuario, displayModal}
     }    
     
 }
