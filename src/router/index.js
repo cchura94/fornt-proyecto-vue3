@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Login from '../views/auth/Login.vue'
 import AppLayout from '@/layout/AppLayout.vue';
+import Categoria from '../views/admin/Categoria.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,9 +33,15 @@ const router = createRouter({
       component: AppLayout,
       children: [
         {
-          path: '/usuario',
+          path: 'usuario',
           name: 'Usuario',
           component: () => import('../views/admin/Usuario.vue'),
+          meta: {requireAuth: true}
+        },
+        {
+          path: 'categoria',
+          name: 'Categoria',
+          component: () => Categoria,
           meta: {requireAuth: true}
         }
 
