@@ -29,6 +29,7 @@
         />
       </template>
     </Dialog>
+    <ProgressBar mode="indeterminate" style="height: 6px" v-if="loading"></ProgressBar>
 
     <DataTable :value="categorias" responsiveLayout="scroll">
       <Column field="id" header="Code"></Column>
@@ -49,34 +50,46 @@ import categoriaService from "@/service/CategoriaService";
 const categorias = ref([]);
 const visible = ref(false);
 const categoria = ref({ nombre: "" });
+const loading = ref(true)
 
 onMounted(() => {
   getCategorias();
 });
 
 const getCategorias = async () => {
+  loading.value = true;
+
   const { data } = await categoriaService.listar();
   categorias.value = data;
+
+  loading.value = false;
 };
 
 const guardarCategoria = async () => {
   try {
+    loading.value = true;
+
     if (categoria.value.id) {
       const { data } = await categoriaService.modificar(
         categoria.value.id,
         categoria.value
       );
       categoria.value = { nombre: "" };
-      getCategorias();
-      visible.value = false;
+      
     } else {
       const { data } = await categoriaService.guardar(categoria.value);
       categoria.value = { nombre: "" };
-      getCategorias();
-      visible.value = false;
+      
     }
+
+    loading.value = false;
+
+    visible.value = false;
+    getCategorias();
+    
   } catch (error) {
     console.log(error);
+    loading.value = false;
   }
 };
 

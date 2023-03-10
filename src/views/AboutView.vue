@@ -1,8 +1,10 @@
 <template>
-  <div class="about">
-    <h1>ACERCA DE</h1>
-    <button @click="salir">SALIR</button>
-    {{ mis_datos }}
+  <ProgressBar mode="indeterminate" style="height: 6px" v-if="mis_datos == null"></ProgressBar>
+  <div class="card" v-else>
+    <h1>Perfil</h1>
+    <h3>Nombre: {{ mis_datos.name }}</h3>
+    <h3>Correo: {{ mis_datos.email }}</h3>
+    <Button @click="salir">SALIR</Button>
   </div>
 </template>
 
@@ -15,7 +17,7 @@ export default {
   setup() {
     const router = useRouter()
 
-    const mis_datos = ref({})
+    const mis_datos = ref(null)
 
     const perfil = async () => {
       const {data} = await authService.getPerfil();
