@@ -1,10 +1,12 @@
 import { http } from "./HttpAxios"
 
 export default {
-    listar(){
-        return http().get("/admin/producto");
+    listar(params = ''){
+        console.log(params)
+        return http().get(`/admin/producto?page=1`);
     },
     guardar(datos){
+        console.log(datos)
         return http().post("/admin/producto", datos);
     },
     mostrar(id){
@@ -15,5 +17,8 @@ export default {
     },
     eliminar(id){
         return http().delete(`/admin/producto/${id}`);
+    },
+    guardarImagen(fd, id){
+        return http().post(`/admin/producto/${id}/imagen`, fd);
     }
 }

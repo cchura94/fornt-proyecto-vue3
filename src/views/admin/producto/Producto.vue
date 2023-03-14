@@ -42,13 +42,13 @@
 
 </Dialog>
 
-
-  <DataTable :value="products" tableStyle="min-width: 50rem">
+  <DataTable ref="dt" :value="products" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem"
+              lazy :totalRecords="totalRecords" :loading="loading" @page="onPage($event)">
     <template #header>
       <div
         class="flex flex-wrap align-items-center justify-content-between gap-2"
       >
-        <span class="text-xl text-900 font-bold">Products</span>
+        <span class="text-xl text-900 font-bold">Productos</span>
         <Button icon="pi pi-refresh" rounded raised />
       </div>
     </template>
@@ -57,10 +57,12 @@
     <Column header="Imagen">
       <template #body="slotProps">
         <img
-          :src="`http://127.0.0.1:8000/${slotProps.data.imagen}`"
+          :src="slotProps.data.imagen?`http://127.0.0.1:8000/${slotProps.data.imagen}`:`https://img.freepik.com/vector-premium/vector-icono-imagen-predeterminado-pagina-imagen-faltante-diseno-sitio-web-o-aplicacion-movil-no-hay-foto-disponible_87543-11093.jpg`"
           :alt="slotProps.data.imagen"
           class="w-6rem shadow-2 border-round"
         />
+        <Button icon="pi pi-camera" @click="seleccionarImagen(slotProps.data.id)" />
+
       </template>
     </Column>
     <Column field="precio" header="Precio">
@@ -68,15 +70,28 @@
         {{ formatCurrency(slotProps.data.precio) }}
       </template>
     </Column>
-    <Column field="categoria_id" header="Categoria"></Column>
+    <Column field="categoria.nombre" header="Categoria"></Column>
     
-    <Column header="Estado">
+    <Column field="estado" header="Estado">
+      <template #body="slotProps">
+        {{ slotProps.data.estado?'activo':'inactivo' }}
+      </template>
 
     </Column>
     <template #footer>
       En total hay {{ products ? products.length : 0 }} productos.
     </template>
   </DataTable>
+
+
+<Dialog v-model:visible="visible_img" modal header="Subir Imagen" :style="{ width: '50vw' }">
+    <FileUpload name="demo[]" customUpload @uploader="subirImagen" @upload="onAdvancedUpload($event)" :multiple="false" accept="image/*" :maxFileSize="1000000">
+      <template #empty>
+          <p>Arrastre su imagen aqui.</p>
+      </template>
+  </FileUpload>
+</Dialog>
+
 </template>
 
 <script setup>
@@ -88,6 +103,11 @@ const products = ref([]);
 const dialogNuevoProducto = ref(false)
 const product = ref({})
 const categorias = ref([]);
+const visible_img = ref(false)
+const id_producto = ref(-1)
+const totalRecords = ref(0)
+const loading = ref(false)
+const lazyParams = ref({});
 
 const abrirDialogProducto = () => {
     dialogNuevoProducto.value = true
@@ -97,9 +117,31 @@ const cerrarDialogProducto = () => {
     dialogNuevoProducto.value = false
 }
 
+const seleccionarImagen = (id) => {
+  visible_img.value = true
+  id_producto.value = id
+}
+
+const onPage = (event) => {
+    lazyParams.value = event;
+    loadLazyData();
+};
+
+const loadLazyData = async () => {
+    loading.value = true;
+    
+    const {data} = await productoService.listar({ lazyEvent: JSON.stringify(lazyParams.value) })
+    products.value = data.data;
+    totalRecords.value = data.total;
+    loading.value = false;
+
+};
+
 // productoService
 const listaProductos = async() => {
-    const {data} = await productoService.listar();
+    const {data} = await productoService.listar({ lazyEvent: JSON.stringify(lazyParams.value) });
+
+    console.log(data.data)
 
     products.value = data.data
 }
@@ -110,11 +152,27 @@ const listaCategorias = async() => {
     categorias.value = data
 }
 
+const subirImagen = async(event) => {
+  console.log("Subiendo...", event.files)
+
+  let fd = new FormData();
+  fd.append('imagen', event.files[0])
+
+  await productoService.guardarImagen(fd, id_producto.value);
+
+visible_img.value = false
+  listaProductos()
+}
+
 listaProductos()
 listaCategorias()
 
 const guardarProducto = async () => {
+  console.log(product.value)
+
     await productoService.guardar(product.value);
+
+    product.value = {} 
     listaProductos()
     cerrarDialogProducto()
 }
