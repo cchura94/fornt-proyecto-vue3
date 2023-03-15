@@ -1,9 +1,16 @@
 import { http } from "./HttpAxios"
 
 export default {
-    listar(params = ''){
+    listar(params = {lazyEvent: "{}"}){
+        console.log(params.lazyEvent)
+        
+        params = JSON.parse(params.lazyEvent)
         console.log(params)
-        return http().get(`/admin/producto?page=1`);
+
+        let page = params.page?params.page+1:1;
+        let limit = params.rows?params.rows:5;
+
+        return http().get(`/admin/producto?page=${page}&limit=${limit}`);
     },
     guardar(datos){
         console.log(datos)

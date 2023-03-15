@@ -4,7 +4,7 @@
 <Button label="Nuevo producto" icon="pi pi-external-link" @click="abrirDialogProducto" />
 
 <Dialog v-model:visible="dialogNuevoProducto" modal header="Nuevo Producto" :style="{ width: '50vw' }" class="p-fluid">
-    {{ product }}
+    <!--{{ product }} -->
     <div class="filed">
         <label for="nom">Ingrese Nombre</label>
         <InputText type="text" id="nom" v-model="product.nombre" required autofocus  />
@@ -78,8 +78,15 @@
       </template>
 
     </Column>
+    <Column field="acciones" header="Accion">
+      <template #body="slotProps">        
+          <Button icon="pi pi-pencil" class="p-button-rounded p-button-warning" rounded  @click="editarProducto(slotProps.data)" />
+          <Button icon="pi pi-times" class="p-button-rounded p-button-danger" aria-label="Eliminar" @click="eliminarProducto(slotProps.data.id)" />
+      </template>
+
+    </Column>
     <template #footer>
-      En total hay {{ products ? products.length : 0 }} productos.
+      En total hay {{ totalRecords ? totalRecords : 0 }} productos.
     </template>
   </DataTable>
 
@@ -139,11 +146,22 @@ const loadLazyData = async () => {
 
 // productoService
 const listaProductos = async() => {
+  loading.value = true;
     const {data} = await productoService.listar({ lazyEvent: JSON.stringify(lazyParams.value) });
 
     console.log(data.data)
 
-    products.value = data.data
+    products.value = data.data;
+    totalRecords.value = data.total;
+    loading.value = false;
+}
+
+const editarProducto = (prod) => {
+
+  product.value = prod
+
+  dialogNuevoProducto.value = true
+
 }
 
 const listaCategorias = async() => {
@@ -170,11 +188,31 @@ listaCategorias()
 const guardarProducto = async () => {
   console.log(product.value)
 
+  if(product.value.id){
+    await productoService.modificar(product.value.id, product.value);
+
+  }else{
+
     await productoService.guardar(product.value);
+  }
+
 
     product.value = {} 
     listaProductos()
     cerrarDialogProducto()
+}
+
+const eliminarProducto = async (id) => {
+
+  if (id) {
+    if(confirm("Esta seguro de eliminar el producto")){
+      loading.value = true;
+      await productoService.eliminar(id);
+    loading.value = false;
+      loadLazyData()
+    }
+
+  }
 }
 
 const formatCurrency = (value) => {
