@@ -27,5 +27,8 @@ export default {
     },
     guardarImagen(fd, id){
         return http().post(`/admin/producto/${id}/imagen`, fd);
+    },
+    filtrar(q=''){
+        return http().get(`/admin/producto?q=${q}&limit=5`);
     }
 }
