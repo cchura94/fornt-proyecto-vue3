@@ -5,6 +5,7 @@ import AppLayout from '@/layout/AppLayout.vue';
 import Categoria from '../views/admin/Categoria.vue'
 import Producto from '../views/admin/producto/Producto.vue'
 import NuevoPedido from '../views/admin/pedido/NuevoPedido.vue'
+import ListaPedido from '../views/admin/pedido/ListaPedido.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,12 @@ const router = createRouter({
           path: 'pedido/nuevo',
           name: 'NuevoPedido',
           component: () => NuevoPedido,
+          meta: {requireAuth: true}
+        },
+        {
+          path: 'pedido',
+          name: 'ListaPedido',
+          component: () => ListaPedido,
           meta: {requireAuth: true}
         }
 

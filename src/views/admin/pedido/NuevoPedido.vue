@@ -72,7 +72,7 @@
         </div>
         <div class="col-12">
           <div class="card">
-            <h5>GUARDAR PEDIDO</h5>
+            <Button label="Guardar" icon="pi pi-check" class="p-button-text" @click="guardarPedido"></Button>
           </div>
         </div>
       </div>
@@ -111,6 +111,7 @@
 import { onMounted, ref } from "vue";
 import productoService from "@/service/ProductoService";
 import clienteService from "@/service/ClienteService";
+import pedidoService from "@/service/PedidoService";
 
 const products = ref([]);
 const buscar = ref("");
@@ -153,5 +154,14 @@ const guardarCliente = async () => {
     cliente.value = data
 
     visible.value = false
+}
+
+const guardarPedido = async () => {
+  const datos_ped = {
+    cliente_id: cliente.value,
+    productos: carrito.value
+  } 
+
+  const {data} =await pedidoService.guardar(datos_ped)
 }
 </script>
