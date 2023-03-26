@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-const urlServidor = 'http://127.0.0.1:8000/api';
+// const urlServidor = 'http://127.0.0.1:8000/api';
+const urlServidor = 'https://api.ventas.blumbit.net/laravel/public/api';
+export const urlAsset = 'https://api.ventas.blumbit.net/laravel/public'
 
 export const http = () => {
 

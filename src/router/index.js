@@ -45,25 +45,25 @@ const router = createRouter({
         {
           path: 'categoria',
           name: 'Categoria',
-          component: () => Categoria,
+          component: Categoria,
           meta: {requireAuth: true}
         },
         {
           path: 'producto',
           name: 'Producto',
-          component: () => Producto,
+          component: Producto,
           meta: {requireAuth: true}
         },
         {
           path: 'pedido/nuevo',
           name: 'NuevoPedido',
-          component: () => NuevoPedido,
+          component: NuevoPedido,
           meta: {requireAuth: true}
         },
         {
           path: 'pedido',
           name: 'ListaPedido',
-          component: () => ListaPedido,
+          component: ListaPedido,
           meta: {requireAuth: true}
         }
 

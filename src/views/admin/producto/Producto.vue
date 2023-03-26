@@ -57,7 +57,7 @@
     <Column header="Imagen">
       <template #body="slotProps">
         <img
-          :src="slotProps.data.imagen?`http://127.0.0.1:8000/${slotProps.data.imagen}`:`https://img.freepik.com/vector-premium/vector-icono-imagen-predeterminado-pagina-imagen-faltante-diseno-sitio-web-o-aplicacion-movil-no-hay-foto-disponible_87543-11093.jpg`"
+          :src="slotProps.data.imagen?`${urlAsset}/${slotProps.data.imagen}`:`https://img.freepik.com/vector-premium/vector-icono-imagen-predeterminado-pagina-imagen-faltante-diseno-sitio-web-o-aplicacion-movil-no-hay-foto-disponible_87543-11093.jpg`"
           :alt="slotProps.data.imagen"
           class="w-6rem shadow-2 border-round"
         />
@@ -105,6 +105,7 @@
 import { ref } from "vue";
 import productoService from "@/service/ProductoService";
 import categoriaService from "@/service/CategoriaService";
+import { urlAsset } from "@/service/HttpAxios.js";
 
 const products = ref([]);
 const dialogNuevoProducto = ref(false)
